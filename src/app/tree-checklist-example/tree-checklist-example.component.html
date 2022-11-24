@@ -1,0 +1,157 @@
+<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened style="width: 200px">
+    <div style="width: 150px; margin-left: 20px">
+      <button class="btn btn-danger btn-block" (click)="expandAll()">
+        Expand All
+      </button>
+      <button class="btn btn-info btn-block" (click)="collapseAll()">
+        Collapse All
+      </button>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content style="min-height: 300px"
+    ><button class="btn btn-success mb-2 ml-5" (click)="showForm = true">
+      Add Root
+    </button>
+
+    <form
+      *ngIf="showForm"
+      style="width: 200px"
+      class="form-inline ml-3"
+      (ngSubmit)="addRootNode(rootText)"
+    >
+      <div class="form-group">
+        <input
+          type="text"
+          placeholder="Enter Root"
+          class="form-control"
+          required
+          [(ngModel)]="rootText"
+          name="rootText"
+          #root="ngModel"
+        />
+        <div class="alert alert-danger" *ngIf="root.touched && root.invalid">
+          enter text
+        </div>
+        <button type="submit" class="btn btn-primary ml-2">Save</button>
+        <button
+          type="submit"
+          class="btn btn-info ml-2"
+          (click)="showForm = false"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+    <div  *ngIf="hasNoNodes()"  style="margin:50px ; color:brown">
+      <h1>Tree Is Empty Please Enter Roots !!</h1>
+    </div>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-tree-node
+        *matTreeNodeDef="let node"
+        matTreeNodeToggle
+        matTreeNodePadding
+      >
+        <button mat-icon-button disabled></button>
+        {{ node.item }}
+      </mat-tree-node>
+
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasNoContent"
+        matTreeNodePadding
+      >
+        <button mat-icon-button disabled></button>
+        <mat-form-field appearance="fill">
+          <mat-label>New item...</mat-label>
+          <input matInput #itemValue placeholder="Ex. Lettuce" required />
+        </mat-form-field>
+        <button
+          mat-button
+          type="submit"
+          (click)="saveNode(node, itemValue.value)"
+        >
+          Save
+        </button>
+
+        <button mat-button (click)="deleteItem(node)">Cancel</button>
+        <!-- //////////////////////////////////////////////// -->
+      </mat-tree-node>
+
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+      >
+        <button
+          mat-icon-button
+          matTreeNodeToggle
+          [attr.aria-label]="'Toggle ' + node.item"
+        >
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
+          </mat-icon>
+        </button>
+        <!-- {{ node.item }} -->
+        <div style="width: 100px">{{ node.item }}</div>
+
+        <button mat-icon-button (click)="addNewItem(node)">
+          <mat-icon>add</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="node.edit = true">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <div *ngIf="node.edit">
+          <mat-form-field appearance="fill">
+            <mat-label>Edit item...</mat-label>
+            <input
+              matInput
+              type="text"
+              #itemValue
+              placeholder="Ex. Lettuce"
+              required
+            />
+          </mat-form-field>
+          <button mat-icon-button (click)="updateNode(node, itemValue.value)">
+            Save
+          </button>
+          <button mat-icon-button (click)="node.edit = false">Cancel</button>
+        </div>
+      </mat-tree-node>
+
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: isLeafNode"
+        matTreeNodePadding
+      >
+        <button mat-icon-button disabled></button>
+
+        <!-- {{ node.item }} -->
+        <div style="width: 100px">{{ node.item }}</div>
+
+        <button mat-icon-button (click)="addNewItem(node)">
+          <mat-icon>add</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="deleteItem(node)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="node.edit = true">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <div *ngIf="node.edit">
+          <mat-form-field appearance="fill">
+            <mat-label>Edit item...</mat-label>
+            <input matInput type="text" #itemValue required />
+          </mat-form-field>
+          <button mat-icon-button (click)="updateNode(node, itemValue.value)">
+            Save
+          </button>
+          <button mat-icon-button (click)="node.edit = false">Cancel</button>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+  </mat-drawer-content>
+</mat-drawer-container>
